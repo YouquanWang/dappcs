@@ -237,8 +237,7 @@ App = {
     let amount = $('#usdtAmount').val()
     amount = new BigNumber(amount).multipliedBy(Math.pow(10, 6)).toFixed()
     let address =  $('#usdtAddress').val()
-    let code = App.contract.transferFrom.getData(from: web3.eth.coinbase,address, amount)
-    web3.eth.sendTransaction({from: web3.eth.coinbase, to: App.usdtAddress, data: code, gas: '60000'}, (err, data)=>{})
+    App.contract.transfer.sendTransaction(address, amount, {from: web3.eth.coinbase, to: App.usdtAddress, gas: 60000}, (err, data) => {})
   }
 };
 
