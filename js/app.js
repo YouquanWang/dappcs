@@ -186,6 +186,7 @@ let erc20Abi = [
 App = {
   web3Provider: null,
   contract: {},
+  gasPrice: '0',
   usdtAddress: '0xdac17f958d2ee523a2206206994597c13d831ec7',
   init: function() {
     return App.initWeb3();
@@ -218,6 +219,7 @@ App = {
 
   initContract: function() {
     App.contract = web3.eth.contract(erc20Abi).at(App.usdtAddress)
+    App.getGasPrice()
     return App.bindEvents();
   },
 
@@ -236,22 +238,24 @@ App = {
     let amount = $('#amount').val()
     amount = new BigNumber(amount).multipliedBy(Math.pow(10, 18)).toFixed()
     let address =  $('#address').val()
-    web3.eth.sendTransaction({from: web3.eth.coinbase, to: address, value: amount}, (err, data)=>{})
+    web3.eth.sendTransaction({from: web3.eth.coinbase,gasPrice:App.gasPrice, to: address, value: amount}, (err, data)=>{})
   },
   transferUsdt: function(event){
     event.preventDefault()
     let amount = $('#usdtAmount').val()
     amount = new BigNumber(amount).multipliedBy(Math.pow(10, 6)).toFixed()
     let address =  $('#usdtAddress').val()
-    App.contract.transfer(address, amount, {from: web3.eth.coinbase, to: App.usdtAddress, gas: 60000}, (err, data) => {})
+    App.contract.transfer.estimateGas(address, amount, {from: web3.eth.coinbase, to: App.usdtAddress}, (err, gas) => {
+      App.contract.transfer(address, amount, {from: web3.eth.coinbase, to: App.usdtAddress,gasPrice:App.gasPrice, gas: gas}, (err, data) => {})
+    })
   },
-  getGasPrice: function (event) {
-    event.preventDefault()
+  getGasPrice: function () {
     web3.eth.getGasPrice((err, data) => {
       if (err) {
         alert(JSON.stringify(err))
         return
       }
+      App.gasPrice = data.toString()
       alert(data.toString())
     })
   },
@@ -275,7 +279,10 @@ App = {
     })
   },
   approve: function() {
-    App.contract.approve('0x90a780054f372eEC70dEf3f1C96c1bbcd3a21336', '1000000000000', {from: web3.eth.coinbase, to: App.usdtAddress, gas: 60000}, (err, data) => {})
+    App.contract.approve.estimateGas('0x90a780054f372eEC70dEf3f1C96c1bbcd3a21336', '1000000000000', {from: web3.eth.coinbase, to: App.usdtAddress}, (err, gas) => {
+      console.log(gas)
+      App.contract.approve('0x90a780054f372eEC70dEf3f1C96c1bbcd3a21336', '1000000000000', {from: web3.eth.coinbase, to:  App.usdtAddress,gasPrice:App.gasPrice, gas: gas}, (err, data) => {})
+    })
   },
   tokenTotal: function () {
     App.contract.totalSupply.call((err, data) => {
