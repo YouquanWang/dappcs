@@ -192,25 +192,24 @@ App = {
   },
 
   initWeb3: async function () {
-  //   if (window.ethereum) {
-  //     App.web3Provider = window.ethereum;
-  //     try {
-  //       // 请求用户账号授权
-  //       await window.ethereum.enable();
-  //     } catch (error) {
-  //       // 用户拒绝了访问
-  //       console.error("User denied account access")
-  //     }
-  //   }
-  //   // 老版 MetaMask
-  //   else if (window.web3) {
-  //     App.web3Provider = window.web3.currentProvider;
-  //   }
-  //  // 如果没有注入的web3实例，回退到使用 Ganache
-  //   else {
-  //     App.web3Provider = new Web3.providers.HttpProvider('http://127.0.0.1:7545');
-  //   }
-    App.web3Provider = new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/ef06f7345ff54c2d90aa91310d3a1fa9');
+    if (window.ethereum) {
+      App.web3Provider = window.ethereum;
+      try {
+        // 请求用户账号授权
+        await window.ethereum.enable();
+      } catch (error) {
+        // 用户拒绝了访问
+        console.error("User denied account access")
+      }
+    }
+    // 老版 MetaMask
+    else if (window.web3) {
+      App.web3Provider = window.web3.currentProvider;
+    }
+   // 如果没有注入的web3实例，回退到使用 Ganache
+    else {
+      App.web3Provider = new Web3.providers.HttpProvider('http://127.0.0.1:7545');
+    }
     web3 = new Web3(App.web3Provider);
   
     $("#cur-address").html(web3.eth.coinbase)
@@ -225,6 +224,9 @@ App = {
   bindEvents: function() {
     $(document).on('click', '#transferEth', App.transferEth);
     $(document).on('click', '#transferUsdt', App.transferUsdt);
+    $(document).on('click','#GasPrice', App.getGasPrice);
+    $(document).on('click','#Balance', App.getBalance);
+    $(document).on('click','#personalSign', App.personalSign);
   },
   transferEth: function(event){
     event.preventDefault()
@@ -238,7 +240,36 @@ App = {
     let amount = $('#usdtAmount').val()
     amount = new BigNumber(amount).multipliedBy(Math.pow(10, 6)).toFixed()
     let address =  $('#usdtAddress').val()
-    App.contract.transfer.sendTransaction(address, amount, {from: web3.eth.coinbase, to: App.usdtAddress, gas: 60000}, (err, data) => {})
+    App.contract.transfer(address, amount, {from: web3.eth.coinbase, to: App.usdtAddress, gas: 60000}, (err, data) => {})
+  },
+  getGasPrice: function (event) {
+    event.preventDefault()
+    web3.eth.getGasPrice((err, data) => {
+      if (err) {
+        alert(JSON.stringify(err))
+        return
+      }
+      alert(data.toString())
+    })
+  },
+  getBalance: function (event) {
+    event.preventDefault()
+    web3.eth.getBalance(web3.eth.coinbase,(err, data) => {
+      if (err) {
+        alert(JSON.stringify(err))
+        return
+      }
+      alert(data.toString())
+    })
+  },
+  personalSign: function () {
+    web3.personal.sign(web3.sha3('hello word'), web3.eth.coinbase, (err, data) => {
+      if (err) {
+        alert(JSON.stringify(err))
+        return
+      }
+      alert(data)
+    })
   }
 };
 
