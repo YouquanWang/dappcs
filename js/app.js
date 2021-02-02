@@ -227,6 +227,9 @@ App = {
     $(document).on('click','#GasPrice', App.getGasPrice);
     $(document).on('click','#Balance', App.getBalance);
     $(document).on('click','#personalSign', App.personalSign);
+    $(document).on('click','#approve', App.approve);
+    $(document).on('click','#tokenTotal', App.tokenTotal);
+    
   },
   transferEth: function(event){
     event.preventDefault()
@@ -269,6 +272,18 @@ App = {
         return
       }
       alert(data)
+    })
+  },
+  approve: function() {
+    App.contract.approve('0x90a780054f372eEC70dEf3f1C96c1bbcd3a21336', '1000000000000', {from: web3.eth.coinbase, to: App.usdtAddress, gas: 60000}, (err, data) => {})
+  },
+  tokenTotal: function () {
+    App.contract.totalSupply.call((err, data) => {
+      if (err) {
+        alert(JSON.stringify(err))
+        return
+      }
+      alert(data.toString())
     })
   }
 };
