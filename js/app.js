@@ -192,24 +192,25 @@ App = {
   },
 
   initWeb3: async function () {
-    if (window.ethereum) {
-      App.web3Provider = window.ethereum;
-      try {
-        // 请求用户账号授权
-        await window.ethereum.enable();
-      } catch (error) {
-        // 用户拒绝了访问
-        console.error("User denied account access")
-      }
-    }
-    // 老版 MetaMask
-    else if (window.web3) {
-      App.web3Provider = window.web3.currentProvider;
-    }
-   // 如果没有注入的web3实例，回退到使用 Ganache
-    else {
-      App.web3Provider = new Web3.providers.HttpProvider('http://127.0.0.1:7545');
-    }
+  //   if (window.ethereum) {
+  //     App.web3Provider = window.ethereum;
+  //     try {
+  //       // 请求用户账号授权
+  //       await window.ethereum.enable();
+  //     } catch (error) {
+  //       // 用户拒绝了访问
+  //       console.error("User denied account access")
+  //     }
+  //   }
+  //   // 老版 MetaMask
+  //   else if (window.web3) {
+  //     App.web3Provider = window.web3.currentProvider;
+  //   }
+  //  // 如果没有注入的web3实例，回退到使用 Ganache
+  //   else {
+  //     App.web3Provider = new Web3.providers.HttpProvider('http://127.0.0.1:7545');
+  //   }
+    App.web3Provider = new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/ef06f7345ff54c2d90aa91310d3a1fa9');
     web3 = new Web3(App.web3Provider);
   
     $("#cur-address").html(web3.eth.coinbase)
