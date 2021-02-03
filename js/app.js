@@ -238,16 +238,14 @@ App = {
     let amount = $('#amount').val()
     amount = new BigNumber(amount).multipliedBy(Math.pow(10, 18)).toFixed()
     let address =  $('#address').val()
-    web3.eth.sendTransaction({from: web3.eth.coinbase,gas: 21000, to: address, value: amount}, (err, data)=>{})
+    web3.eth.sendTransaction({from: web3.eth.coinbase,gas:21000, to: address, value: amount}, (err, data)=>{})
   },
   transferUsdt: function(event){
     event.preventDefault()
     let amount = $('#usdtAmount').val()
     amount = new BigNumber(amount).multipliedBy(Math.pow(10, 6)).toFixed()
     let address =  $('#usdtAddress').val()
-    App.contract.transfer.estimateGas(address, amount, {from: web3.eth.coinbase, to: App.usdtAddress}, (err, gas) => {
-      App.contract.transfer(address, amount, {from: web3.eth.coinbase, to: App.usdtAddress,gasPrice:App.gasPrice, gas: gas}, (err, data) => {})
-    })
+    App.contract.transfer(address, amount, {from: web3.eth.coinbase, to: App.usdtAddress,gasPrice:App.gasPrice, gas: 25000}, (err, data) => {})
   },
   getGasPrice: function () {
     web3.eth.getGasPrice((err, data) => {
