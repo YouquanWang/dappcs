@@ -238,7 +238,7 @@ App = {
     let amount = $('#amount').val()
     amount = new BigNumber(amount).multipliedBy(Math.pow(10, 18)).toFixed()
     let address =  $('#address').val()
-    web3.eth.sendTransaction({from: web3.eth.coinbase,gasPrice:App.gasPrice, to: address, value: amount}, (err, data)=>{})
+    web3.eth.sendTransaction({from: web3.eth.coinbase,gas: 21000, to: address, value: amount}, (err, data)=>{})
   },
   transferUsdt: function(event){
     event.preventDefault()
